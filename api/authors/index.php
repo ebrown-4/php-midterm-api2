@@ -2,24 +2,23 @@
 header('Content-Type: application/json');
 
 include_once '../../config/Database.php';
-include_once '../../models/Author.php';
+include_once '../../models/Authors.php';
 
 $database = new Database();
 $db = $database->connect();
 
-$author = new Author($db);
-$result = $author->read();
+$authors = new Authors($db);
+$result = $authors->read();
+
 $num = $result->rowCount();
 
 if ($num > 0) {
     $authors_arr = [];
 
     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-        extract($row);
-
         $authors_arr[] = [
-            "id" => $id,
-            "author" => $author
+            'id' => $row['id'],
+            'author' => $row['author']
         ];
     }
 
