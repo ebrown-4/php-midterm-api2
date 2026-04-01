@@ -8,8 +8,14 @@ $database = new Database();
 $db = $database->connect();
 
 $quotes = new Quotes($db);
-$result = $quotes->read();
 
+// Read query parameters
+$author_id = isset($_GET['author_id']) ? intval($_GET['author_id']) : null;
+$category_id = isset($_GET['category_id']) ? intval($_GET['category_id']) : null;
+$random = isset($_GET['random']) && $_GET['random'] === 'true';
+
+// Fetch results
+$result = $quotes->read($author_id, $category_id, $random);
 $num = $result->rowCount();
 
 if ($num > 0) {
