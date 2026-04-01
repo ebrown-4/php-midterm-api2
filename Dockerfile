@@ -1,19 +1,9 @@
-# Use official PHP 8.2 with Apache
-FROM php:8.2-apache
+FROM php:8.2-cli
 
-# Install system dependencies for PostgreSQL
-RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    && docker-php-ext-install pdo pdo_pgsql
+WORKDIR /var/www/html
 
-# Enable Apache rewrite module
-RUN a2enmod rewrite
+COPY . .
 
-# Copy project files into Apache directory
-COPY . /var/www/html/
+EXPOSE 10000
 
-# Set correct permissions
-RUN chown -R www-data:www-data /var/www/html
-
-# Expose port 80
-EXPOSE 80
+CMD ["php", "-S", "0.0.0.0:10000", "-t", "."]
