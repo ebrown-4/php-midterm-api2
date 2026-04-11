@@ -1,10 +1,11 @@
 <?php
 class Database
 {
-    private $host = "localhost";
-    private $db_name = "phpmidterm";
-    private $username = "root";
-    private $password = "";
+    private $host = "dpg-d767oavfte5s73ee9gig-a.ohio-postgres.render.com";
+    private $db_name = "php_midterm_db";
+    private $username = "php_midterm_db_user";
+    private $password = "G1CoEANjeRpgdxmY3klDEMFUnVpW72Fo";
+    private $port = "5432";
     public $conn;
 
     public function connect()
@@ -12,11 +13,9 @@ class Database
         $this->conn = null;
 
         try {
-            $dsn = "mysql:host={$this->host};dbname={$this->db_name};charset=utf8";
+            $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->db_name};";
 
             $this->conn = new PDO($dsn, $this->username, $this->password);
-
-            // Throw exceptions on errors
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
             echo json_encode(["message" => "Connection Error: " . $e->getMessage()]);
