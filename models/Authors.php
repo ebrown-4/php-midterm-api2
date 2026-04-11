@@ -1,11 +1,11 @@
 <?php
-class Author
+class Authors
 {
     private $conn;
     private $table = 'authors';
 
     public $id;
-    public $name;
+    public $author;
 
     public function __construct($db)
     {
@@ -15,7 +15,7 @@ class Author
     // READ ALL AUTHORS
     public function read()
     {
-        $query = "SELECT id, name FROM {$this->table} ORDER BY id ASC";
+        $query = "SELECT id, author FROM {$this->table} ORDER BY id ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
@@ -24,7 +24,7 @@ class Author
     // READ SINGLE AUTHOR
     public function read_single()
     {
-        $query = "SELECT id, name FROM {$this->table} WHERE id = :id LIMIT 1";
+        $query = "SELECT id, author FROM {$this->table} WHERE id = :id LIMIT 1";
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(':id', $this->id);
@@ -33,19 +33,19 @@ class Author
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($row) {
-            $this->name = $row['name'];
+            $this->author = $row['author'];
         }
     }
 
     // CREATE AUTHOR
     public function create()
     {
-        $query = "INSERT INTO {$this->table} (name) VALUES (:name)";
+        $query = "INSERT INTO {$this->table} (author) VALUES (:author)";
         $stmt = $this->conn->prepare($query);
 
-        $this->name = htmlspecialchars(strip_tags($this->name));
+        $this->author = htmlspecialchars(strip_tags($this->author));
 
-        $stmt->bindParam(':name', $this->name);
+        $stmt->bindParam(':author', $this->author);
 
         return $stmt->execute();
     }
@@ -54,15 +54,15 @@ class Author
     public function update()
     {
         $query = "UPDATE {$this->table}
-                  SET name = :name
+                  SET author = :author
                   WHERE id = :id";
 
         $stmt = $this->conn->prepare($query);
 
-        $this->name = htmlspecialchars(strip_tags($this->name));
+        $this->author = htmlspecialchars(strip_tags($this->author));
         $this->id = htmlspecialchars(strip_tags($this->id));
 
-        $stmt->bindParam(':name', $this->name);
+        $stmt->bindParam(':author', $this->author);
         $stmt->bindParam(':id', $this->id);
 
         return $stmt->execute();

@@ -1,11 +1,11 @@
 <?php
-class Category
+class Categories
 {
     private $conn;
     private $table = 'categories';
 
     public $id;
-    public $name;
+    public $category;
 
     public function __construct($db)
     {
@@ -15,7 +15,7 @@ class Category
     // READ ALL CATEGORIES
     public function read()
     {
-        $query = "SELECT id, name FROM {$this->table} ORDER BY id ASC";
+        $query = "SELECT id, category FROM {$this->table} ORDER BY id ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
@@ -24,7 +24,7 @@ class Category
     // READ SINGLE CATEGORY
     public function read_single()
     {
-        $query = "SELECT id, name FROM {$this->table} WHERE id = :id LIMIT 1";
+        $query = "SELECT id, category FROM {$this->table} WHERE id = :id LIMIT 1";
         $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(':id', $this->id);
@@ -33,19 +33,19 @@ class Category
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($row) {
-            $this->name = $row['name'];
+            $this->category = $row['category'];
         }
     }
 
     // CREATE CATEGORY
     public function create()
     {
-        $query = "INSERT INTO {$this->table} (name) VALUES (:name)";
+        $query = "INSERT INTO {$this->table} (category) VALUES (:category)";
         $stmt = $this->conn->prepare($query);
 
-        $this->name = htmlspecialchars(strip_tags($this->name));
+        $this->category = htmlspecialchars(strip_tags($this->category));
 
-        $stmt->bindParam(':name', $this->name);
+        $stmt->bindParam(':category', $this->category);
 
         return $stmt->execute();
     }
@@ -54,15 +54,15 @@ class Category
     public function update()
     {
         $query = "UPDATE {$this->table}
-                  SET name = :name
+                  SET category = :category
                   WHERE id = :id";
 
         $stmt = $this->conn->prepare($query);
 
-        $this->name = htmlspecialchars(strip_tags($this->name));
+        $this->category = htmlspecialchars(strip_tags($this->category));
         $this->id = htmlspecialchars(strip_tags($this->id));
 
-        $stmt->bindParam(':name', $this->name);
+        $stmt->bindParam(':category', $this->category);
         $stmt->bindParam(':id', $this->id);
 
         return $stmt->execute();

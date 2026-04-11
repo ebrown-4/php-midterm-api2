@@ -4,16 +4,16 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Methods: POST');
 
 include_once(__DIR__ . '/../../config/Database.php');
-include_once(__DIR__ . '/../../models/Author.php');
+include_once(__DIR__ . '/../../models/Authors.php');
 
 $database = new Database();
 $db = $database->connect();
 
-$author = new Author($db);
+$author = new Authors($db);
 
 $data = json_decode(file_get_contents("php://input"));
 
-$author->name = $data->name ?? null;
+$author->author = $data->author ?? null;
 
 if ($author->create()) {
     echo json_encode(['message' => 'Author was created successfully']);

@@ -26,16 +26,25 @@ $quote = new Quote($db);
 
 // Read JSON body
 $data = json_decode(file_get_contents("php://input"));
+<?php
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json');
+header('Access-Control-Allow-Methods: DELETE');
 
-if (!empty($data->id)) {
-    $quote->id = $data->id;
+include_once(__DIR__ . '/../../config/Database.php');
+include_once(__DIR__ . '/../../models/Quotes.php');
 
-    if ($quote->delete()) {
-        // REQUIRED BY RUBRIC: return deleted id
-        echo json_encode(["id" => $quote->id]);
-    } else {
-        echo json_encode(["message" => "No Quotes Found"]);
-    }
+$database = new Database();
+$db = $database->connect();
+
+$quote = new Quotes($db);
+
+$data = json_decode(file_get_contents("php://input"));
+
+$quote->id = $data->id ?? null;
+
+if ($quote->delete()) {
+    echo json_encode(['message' => 'Quote was deleted successfully']);
 } else {
-    echo json_encode(["message" => "Missing Required Parameters"]);
+    echo json_encode(['message' => 'Quote Not Deleted']);
 }

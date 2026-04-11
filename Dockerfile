@@ -1,13 +1,16 @@
-FROM php:8.2-cli
+FROM php:8.2-apache
 
-# Install PostgreSQL PDO driver
-RUN apt-get update && apt-get install -y libpq-dev \
-    && docker-php-ext-install pdo pdo_pgsql
+# Install MySQL PDO driver
+RUN docker-php-ext-install pdo pdo_mysql
+
+# Enable Apache rewrite module
+RUN a2enmod rewrite
 
 WORKDIR /var/www/html
 
 COPY . .
 
-EXPOSE 10000
+# Fix permissions for Apache
+RUN chown -R www-data:www-data /var/www/html
 
-CMD ["php", "-S", "0.0.0.0:10000", "-t", "."]
+EXPOSE 80

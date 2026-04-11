@@ -4,12 +4,12 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Methods: POST');
 
 include_once(__DIR__ . '/../../config/Database.php');
-include_once(__DIR__ . '/../../models/Quote.php');
+include_once(__DIR__ . '/../../models/Quotes.php');
 
 $database = new Database();
 $db = $database->connect();
 
-$quote = new Quote($db);
+$quote = new Quotes($db);
 
 $data = json_decode(file_get_contents("php://input"));
 
