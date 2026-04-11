@@ -1,5 +1,20 @@
 <?php
+// CORS HEADERS — MUST BE FIRST
+header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+
+$method = $_SERVER['REQUEST_METHOD'];
+
+if ($method === 'OPTIONS') {
+    header('Access-Control-Allow-Methods: DELETE');
+    header('Access-Control-Allow-Headers: Origin, Accept, Content-Type, X-Requested-With');
+    exit();
+}
+
+if ($method !== 'DELETE') {
+    echo json_encode(["message" => "Invalid Request Method"]);
+    exit();
+}
 
 include_once '../../config/Database.php';
 include_once '../../models/Category.php';
@@ -9,15 +24,17 @@ $db = $database->connect();
 
 $category = new Category($db);
 
+// Read JSON body
 $data = json_decode(file_get_contents("php://input"));
 
 if (!empty($data->id)) {
     $category->id = $data->id;
 
     if ($category->delete()) {
-        echo json_encode(["message" => "Category was deleted successfully"]);
+        // REQUIRED BY RUBRIC: return deleted id
+        echo json_encode(["id" => $category->id]);
     } else {
-        echo json_encode(["message" => "Category Not Deleted"]);
+        echo json_encode(["message" => "No Categories Found"]);
     }
 } else {
     echo json_encode(["message" => "Missing Required Parameters"]);

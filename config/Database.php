@@ -5,6 +5,7 @@ class Database
     private $db_name = "php_midterm_db";
     private $username = "php_midterm_db_user";
     private $password = "G1CoEANjeRpgdxmY3klDEMFUnVpW72Fo";
+    private $port = "5432"; // IMPORTANT for Render
     public $conn;
 
     public function connect()
@@ -12,14 +13,15 @@ class Database
         $this->conn = null;
 
         try {
-            $this->conn = new PDO(
-                "pgsql:host=" . $this->host . ";dbname=" . $this->db_name,
-                $this->username,
-                $this->password
-            );
+            $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->db_name};";
+
+            $this->conn = new PDO($dsn, $this->username, $this->password);
+
+            // Required for proper error handling
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            echo "Connection Error: " . $e->getMessage();
+            echo json_encode(["message" => "Connection Error: " . $e->getMessage()]);
+            exit();
         }
 
         return $this->conn;
