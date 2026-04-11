@@ -14,22 +14,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 echo json_encode([
     "message" => "API root working",
     "endpoints" => [
-        "/authors",
-        "/authors/read_single?id=1",
-        "/authors/create",
-        "/authors/update",
-        "/authors/delete",
+        "/api/authors",
+        "/api/authors/read_single.php?id=1",
+        "/api/authors/create.php",
+        "/api/authors/update.php",
+        "/api/authors/delete.php",
 
-        "/categories",
-        "/categories/read_single?id=1",
-        "/categories/create",
-        "/categories/update",
-        "/categories/delete",
+        "/api/categories",
+        "/api/categories/read_single.php?id=1",
+        "/api/categories/create.php",
+        "/api/categories/update.php",
+        "/api/categories/delete.php",
 
-        "/quotes",
-        "/quotes/read_single?id=1",
-        "/quotes/create",
-        "/quotes/update",
-        "/quotes/delete"
+        "/api/quotes",
+        "/api/quotes/read_single.php?id=1",
+        "/api/quotes/create.php",
+        "/api/quotes/update.php",
+        "/api/quotes/delete.php"
     ]
 ]);

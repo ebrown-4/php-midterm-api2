@@ -1,5 +1,5 @@
 <?php
-class Quotes
+class Quote
 {
     private $conn;
     private $table = 'quotes';
@@ -8,6 +8,8 @@ class Quotes
     public $quote;
     public $author_id;
     public $category_id;
+    public $author;
+    public $category;
 
     public function __construct($db)
     {
@@ -17,7 +19,11 @@ class Quotes
     // READ ALL (with optional filters + random)
     public function read($author_id = null, $category_id = null, $random = false)
     {
-        $query = "SELECT q.id, q.quote, a.author, c.category
+        $query = "SELECT 
+                    q.id, 
+                    q.quote, 
+                    a.name AS author, 
+                    c.name AS category
                   FROM quotes q
                   LEFT JOIN authors a ON q.author_id = a.id
                   LEFT JOIN categories c ON q.category_id = c.id";
@@ -37,7 +43,7 @@ class Quotes
         }
 
         if ($random) {
-            $query .= " ORDER BY RANDOM() LIMIT 1";
+            $query .= " ORDER BY RAND() LIMIT 1";
         } else {
             $query .= " ORDER BY q.id ASC";
         }
@@ -59,7 +65,11 @@ class Quotes
     // READ SINGLE QUOTE
     public function read_single()
     {
-        $query = "SELECT q.id, q.quote, a.author, c.category
+        $query = "SELECT 
+                    q.id, 
+                    q.quote, 
+                    a.name AS author, 
+                    c.name AS category
                   FROM quotes q
                   LEFT JOIN authors a ON q.author_id = a.id
                   LEFT JOIN categories c ON q.category_id = c.id
@@ -71,7 +81,13 @@ class Quotes
         $stmt->bindParam(':id', $this->id);
         $stmt->execute();
 
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            $this->quote = $row['quote'];
+            $this->author = $row['author'];
+            $this->category = $row['category'];
+        }
     }
 
     // VALIDATE AUTHOR EXISTS
@@ -98,8 +114,7 @@ class Quotes
     public function create()
     {
         $query = "INSERT INTO {$this->table} (quote, author_id, category_id)
-                  VALUES (:quote, :author_id, :category_id)
-                  RETURNING id";
+                  VALUES (:quote, :author_id, :category_id)";
 
         $stmt = $this->conn->prepare($query);
 
@@ -109,13 +124,7 @@ class Quotes
         $stmt->bindParam(':author_id', $this->author_id);
         $stmt->bindParam(':category_id', $this->category_id);
 
-        if ($stmt->execute()) {
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            $this->id = $row['id'];
-            return true;
-        }
-
-        return false;
+        return $stmt->execute();
     }
 
     // UPDATE QUOTE

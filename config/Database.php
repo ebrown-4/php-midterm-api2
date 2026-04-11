@@ -1,11 +1,10 @@
 <?php
 class Database
 {
-    private $host = "dpg-d767oavfte5s73ee9gig-a.ohio-postgres.render.com";
-    private $db_name = "php_midterm_db";
-    private $username = "php_midterm_db_user";
-    private $password = "G1CoEANjeRpgdxmY3klDEMFUnVpW72Fo";
-    private $port = "5432"; // IMPORTANT for Render
+    private $host = "localhost";
+    private $db_name = "phpmidterm";
+    private $username = "root";
+    private $password = "";
     public $conn;
 
     public function connect()
@@ -13,7 +12,7 @@ class Database
         $this->conn = null;
 
         try {
-            $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->db_name};";
+            $dsn = "mysql:host={$this->host};dbname={$this->db_name};charset=utf8";
 
             $this->conn = new PDO($dsn, $this->username, $this->password);
 

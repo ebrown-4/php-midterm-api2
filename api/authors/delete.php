@@ -1,41 +1,22 @@
 <?php
-// CORS HEADERS — MUST BE FIRST
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+header('Access-Control-Allow-Methods: DELETE');
 
-$method = $_SERVER['REQUEST_METHOD'];
-
-if ($method === 'OPTIONS') {
-    header('Access-Control-Allow-Methods: DELETE');
-    header('Access-Control-Allow-Headers: Origin, Accept, Content-Type, X-Requested-With');
-    exit();
-}
-
-// DELETE ONLY
-if ($method !== 'DELETE') {
-    echo json_encode(["message" => "Invalid Request Method"]);
-    exit();
-}
-
-include_once '../../config/Database.php';
-include_once '../../models/Author.php';
+include_once(__DIR__ . '/../../config/Database.php');
+include_once(__DIR__ . '/../../models/Author.php');
 
 $database = new Database();
 $db = $database->connect();
 
 $author = new Author($db);
 
-// Read JSON body
 $data = json_decode(file_get_contents("php://input"));
 
-if (!empty($data->id)) {
-    $author->id = $data->id;
+$author->id = $data->id ?? null;
 
-    if ($author->delete()) {
-        echo json_encode(["id" => $author->id]);
-    } else {
-        echo json_encode(["message" => "No Authors Found"]);
-    }
+if ($author->delete()) {
+    echo json_encode(['message' => 'Author was deleted successfully']);
 } else {
-    echo json_encode(["message" => "Missing Required Parameters"]);
+    echo json_encode(['message' => 'Author Not Deleted']);
 }

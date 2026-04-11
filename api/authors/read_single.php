@@ -1,30 +1,24 @@
 <?php
-// CORS HEADERS — MUST BE FIRST
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-include_once '../../config/Database.php';
-include_once '../../models/Author.php';
+include_once(__DIR__ . '/../../config/Database.php');
+include_once(__DIR__ . '/../../models/Author.php');
 
 $database = new Database();
 $db = $database->connect();
 
 $author = new Author($db);
 
-if (!isset($_GET['id'])) {
-    echo json_encode(["message" => "Missing Required Parameters"]);
-    exit();
-}
+$author->id = isset($_GET['id']) ? $_GET['id'] : die();
 
-$author->id = $_GET['id'];
+$author->read_single();
 
-$result = $author->read_single();
-
-if ($result) {
+if ($author->name) {
     echo json_encode([
-        'id' => $result['id'],
-        'author' => $result['author']
+        'id' => $author->id,
+        'name' => $author->name
     ]);
 } else {
-    echo json_encode(["message" => "author_id Not Found"]);
+    echo json_encode(['message' => 'Author Not Found']);
 }

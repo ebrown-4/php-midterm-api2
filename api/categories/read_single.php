@@ -1,40 +1,24 @@
 <?php
-// CORS HEADERS — MUST BE FIRST
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-$method = $_SERVER['REQUEST_METHOD'];
-
-if ($method === 'OPTIONS') {
-    header('Access-Control-Allow-Methods: GET');
-    header('Access-Control-Allow-Headers: Origin, Accept, Content-Type, X-Requested-With');
-    exit();
-}
-
-include_once '../../config/Database.php';
-include_once '../../models/Category.php';
+include_once(__DIR__ . '/../../config/Database.php');
+include_once(__DIR__ . '/../../models/Category.php');
 
 $database = new Database();
 $db = $database->connect();
 
 $category = new Category($db);
 
-// Validate parameter
-if (!isset($_GET['id'])) {
-    echo json_encode(["message" => "Missing Required Parameters"]);
-    exit();
-}
+$category->id = isset($_GET['id']) ? $_GET['id'] : die();
 
-$category->id = $_GET['id'];
+$category->read_single();
 
-// Fetch single category
-$result = $category->read_single();
-
-if ($result) {
+if ($category->name) {
     echo json_encode([
-        "id" => $result['id'],
-        "category" => $result['category']
+        'id' => $category->id,
+        'name' => $category->name
     ]);
 } else {
-    echo json_encode(["message" => "category_id Not Found"]);
+    echo json_encode(['message' => 'Category Not Found']);
 }
