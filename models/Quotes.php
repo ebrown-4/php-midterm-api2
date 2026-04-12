@@ -21,9 +21,11 @@ class Quotes
             SELECT 
                 q.id,
                 q.quote,
-                q.author_id,
-                q.category_id
+                a.author AS author,
+                c.category AS category
             FROM quotes q
+            JOIN authors a ON q.author_id = a.id
+            JOIN categories c ON q.category_id = c.id
         ';
 
         $conditions = [];
@@ -49,10 +51,7 @@ class Quotes
             $stmt->bindValue($key, $val);
         }
 
-        if (!$stmt->execute()) {
-            return [];
-        }
-
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 
@@ -63,9 +62,11 @@ class Quotes
             SELECT 
                 q.id,
                 q.quote,
-                q.author_id,
-                q.category_id
+                a.author AS author,
+                c.category AS category
             FROM quotes q
+            JOIN authors a ON q.author_id = a.id
+            JOIN categories c ON q.category_id = c.id
             WHERE q.id = :id
             LIMIT 1
         ';
