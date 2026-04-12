@@ -14,4 +14,8 @@ COPY . .
 # Fix permissions for Apache
 RUN chown -R www-data:www-data /var/www/html
 
-EXPOSE 80
+# Render requires port 10000
+EXPOSE 10000
+
+# Start Apache on Render's required port
+CMD ["apache2-foreground"]
