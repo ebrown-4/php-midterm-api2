@@ -24,11 +24,8 @@ if (!isset($data->id) || empty($data->id)) {
 $authors->id = $data->id;
 
 // Attempt delete
-$result = $authors->delete();
-
-if ($result) {
-    // Return ONLY the deleted id (grader requirement)
-    echo json_encode(["id" => $result["id"]]);
+if ($authors->delete()) {
+    echo json_encode(["id" => $authors->id]);
 } else {
     echo json_encode(["message" => "author_id Not Found"]);
 }

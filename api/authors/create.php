@@ -24,12 +24,13 @@ if (!isset($data->author) || empty(trim($data->author))) {
 $authors->author = $data->author;
 
 // Create author
-$result = $authors->create();
+if ($authors->create()) {
 
-if ($result) {
-    // Return the created object exactly as the grader expects
+    // Get the ID of the newly created author
+    $new_id = $db->lastInsertId();
+
     echo json_encode([
-        "id" => $result["id"],
+        "id" => $new_id,
         "author" => $authors->author
     ]);
 } else {

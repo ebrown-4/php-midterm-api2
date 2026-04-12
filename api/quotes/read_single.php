@@ -1,36 +1,26 @@
 <?php
-header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-include_once('../../config/Database.php');
-include_once('../../models/Quotes.php');
+include_once '../../config/Database.php';
+include_once '../../models/Quote.php';
 
 $database = new Database();
 $db = $database->connect();
 
-$quotes = new Quotes($db);
+$quote = new Quote($db);
 
-// GET parameter
-$id = $_GET['id'] ?? null;
+$quote->id = isset($_GET['id']) ? $_GET['id'] : die();
 
-// Call model
-$result = $quotes->read($id);
+$result = $quote->read_single();
+$row = $result->fetch(PDO::FETCH_ASSOC);
 
-// If ID is provided → return one object or error
-if ($id !== null) {
-    if ($result) {
-        echo json_encode($result);
-    } else {
-        echo json_encode(["message" => "quote_id Not Found"]);
-    }
-    exit;
-}
-
-// Otherwise return full list
-$rows = $result->fetchAll(PDO::FETCH_ASSOC);
-
-if (count($rows) > 0) {
-    echo json_encode($rows);
+if ($row) {
+    echo json_encode([
+        'id' => $row['id'],
+        'quote' => $row['quote'],
+        'author' => $row['author'],
+        'category' => $row['category']
+    ]);
 } else {
-    echo json_encode(["message" => "quote_id Not Found"]);
+    echo json_encode(['message' => 'No Quotes Found']);
 }

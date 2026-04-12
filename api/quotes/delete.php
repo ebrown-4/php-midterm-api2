@@ -23,10 +23,8 @@ if (!isset($data->id) || empty($data->id)) {
 $quotes->id = $data->id;
 
 // Attempt delete
-$result = $quotes->delete();
-
-if ($result) {
-    echo json_encode(["id" => $result["id"]]);
+if ($quotes->delete()) {
+    echo json_encode(["id" => $quotes->id]);
 } else {
     echo json_encode(["message" => "quote_id Not Found"]);
 }

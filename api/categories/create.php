@@ -23,11 +23,13 @@ if (!isset($data->category) || empty(trim($data->category))) {
 $categories->category = $data->category;
 
 // Create category
-$result = $categories->create();
+if ($categories->create()) {
 
-if ($result) {
+    // Get the ID of the newly created category
+    $new_id = $db->lastInsertId();
+
     echo json_encode([
-        "id" => $result["id"],
+        "id" => $new_id,
         "category" => $categories->category
     ]);
 } else {

@@ -30,11 +30,13 @@ $quotes->author_id = $data->author_id;
 $quotes->category_id = $data->category_id;
 
 // Attempt create
-$result = $quotes->create();
+if ($quotes->create()) {
 
-if ($result) {
+    // Get the ID of the newly created quote
+    $new_id = $db->lastInsertId();
+
     echo json_encode([
-        "id" => $result["id"],
+        "id" => $new_id,
         "quote" => $quotes->quote,
         "author_id" => $quotes->author_id,
         "category_id" => $quotes->category_id

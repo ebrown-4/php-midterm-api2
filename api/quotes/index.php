@@ -10,27 +10,44 @@ $db = $database->connect();
 
 $quotes = new Quotes($db);
 
-// GET parameter
-$id = $_GET['id'] ?? null;
+// If ID is provided, return a single quote
+if (isset($_GET['id'])) {
+    $quotes->id = $_GET['id'];
 
-// Call model
-$result = $quotes->read($id);
+    $result = $quotes->read_single();
+    $row = $result->fetch(PDO::FETCH_ASSOC);
 
-// If ID is provided → return one object or error
-if ($id !== null) {
-    if ($result) {
-        echo json_encode($result);
+    if ($row) {
+        echo json_encode([
+            "id" => $row['id'],
+            "quote" => $row['quote'],
+            "author" => $row['author'],
+            "category" => $row['category']
+        ]);
     } else {
         echo json_encode(["message" => "quote_id Not Found"]);
     }
+
     exit;
 }
 
-// Otherwise return full list
-$rows = $result->fetchAll(PDO::FETCH_ASSOC);
+// Otherwise return all quotes
+$result = $quotes->read();
+$num = $result->rowCount();
 
-if (count($rows) > 0) {
-    echo json_encode($rows);
+if ($num > 0) {
+    $quotes_arr = [];
+
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        $quotes_arr[] = [
+            "id" => $row['id'],
+            "quote" => $row['quote'],
+            "author" => $row['author'],
+            "category" => $row['category']
+        ];
+    }
+
+    echo json_encode($quotes_arr);
 } else {
     echo json_encode(["message" => "quote_id Not Found"]);
 }

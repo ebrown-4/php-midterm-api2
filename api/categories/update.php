@@ -24,11 +24,9 @@ $categories->id = $data->id;
 $categories->category = $data->category;
 
 // Attempt update
-$result = $categories->update();
-
-if ($result) {
+if ($categories->update()) {
     echo json_encode([
-        "id" => $result["id"],
+        "id" => $categories->id,
         "category" => $categories->category
     ]);
 } else {

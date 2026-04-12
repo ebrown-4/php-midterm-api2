@@ -1,36 +1,27 @@
 <?php
-header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-include_once('../../config/Database.php');
-include_once('../../models/Authors.php');
+include_once '../../config/Database.php';
+include_once '../../models/Author.php';
 
 $database = new Database();
 $db = $database->connect();
 
-$authors = new Authors($db);
+$author = new Author($db);
+$result = $author->read();
+$num = $result->rowCount();
 
-// GET parameter
-$id = $_GET['id'] ?? null;
+if ($num > 0) {
+    $authors_arr = [];
 
-// Call model
-$result = $authors->read($id);
-
-//  If ID is provided → return ONE object or error message
-if ($id !== null) {
-    if ($result) {
-        echo json_encode($result);
-    } else {
-        echo json_encode(["message" => "author_id Not Found"]);
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        $authors_arr[] = [
+            'id' => $row['id'],
+            'author' => $row['author']
+        ];
     }
-    exit;
-}
 
-//   Otherwise return full list
-$rows = $result->fetchAll(PDO::FETCH_ASSOC);
-
-if (count($rows) > 0) {
-    echo json_encode($rows);
+    echo json_encode($authors_arr);
 } else {
-    echo json_encode(["message" => "author_id Not Found"]);
+    echo json_encode(['message' => 'No Authors Found']);
 }
