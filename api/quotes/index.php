@@ -1,15 +1,23 @@
 <?php
+header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+header('Access-Control-Allow-Methods: GET, OPTIONS');
+header('Access-Control-Allow-Headers: Origin, Accept, Content-Type, X-Requested-With');
 
-include_once '../../config/Database.php';
-include_once '../../models/Quotes.php';
+// Handle preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit();
+}
+
+include_once('../../config/Database.php');
+include_once('../../models/Quotes.php');
 
 $database = new Database();
 $db = $database->connect();
 
 $quotes = new Quotes($db);
-$result = $quotes->read();
 
+$result = $quotes->read();
 $num = $result->rowCount();
 
 if ($num > 0) {

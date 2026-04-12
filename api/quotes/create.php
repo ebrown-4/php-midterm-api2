@@ -1,8 +1,13 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
-header('Access-Control-Allow-Methods: POST');
-header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Origin, Accept, Content-Type, X-Requested-With');
+
+// Handle preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit();
+}
 
 include_once('../../config/Database.php');
 include_once('../../models/Quotes.php');
@@ -21,7 +26,7 @@ if (
     empty(trim($data->quote))
 ) {
     echo json_encode(["message" => "Missing Required Parameters"]);
-    exit;
+    exit();
 }
 
 $quotes->quote = $data->quote;

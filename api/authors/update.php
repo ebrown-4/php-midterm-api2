@@ -1,8 +1,13 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
-header('Access-Control-Allow-Methods: PUT');
-header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
+header('Access-Control-Allow-Methods: PUT, OPTIONS');
+header('Access-Control-Allow-Headers: Origin, Accept, Content-Type, X-Requested-With');
+
+// Handle preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit();
+}
 
 include_once('../../config/Database.php');
 include_once('../../models/Authors.php');
@@ -17,7 +22,7 @@ $data = json_decode(file_get_contents("php://input"));
 // Required fields
 if (!isset($data->id) || !isset($data->author)) {
     echo json_encode(["message" => "Missing Required Parameters"]);
-    exit;
+    exit();
 }
 
 $authors->id = $data->id;

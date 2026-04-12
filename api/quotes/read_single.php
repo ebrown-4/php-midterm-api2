@@ -1,6 +1,13 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+header('Access-Control-Allow-Methods: GET, OPTIONS');
+header('Access-Control-Allow-Headers: Origin, Accept, Content-Type, X-Requested-With');
+
+// Handle preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit();
+}
 
 include_once('../../config/Database.php');
 include_once('../../models/Quotes.php');
@@ -22,5 +29,5 @@ if ($quotes->read_single()) {
         "category_id" => $quotes->category_id
     ]);
 } else {
-    echo json_encode(["message" => "Quote Not Found"]);
+    echo json_encode(["message" => "quote_id Not Found"]);
 }

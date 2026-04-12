@@ -87,7 +87,9 @@ class Quotes
         $stmt->bindParam(':category_id', $this->category_id);
         $stmt->bindParam(':id', $this->id);
 
-        return $stmt->execute();
+        $stmt->execute();
+
+        return $stmt->rowCount() > 0;
     }
 
     // DELETE
@@ -98,6 +100,8 @@ class Quotes
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
 
-        return $stmt->execute();
+        $stmt->execute();
+
+        return $stmt->rowCount() > 0;
     }
 }
