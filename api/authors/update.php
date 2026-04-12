@@ -2,22 +2,35 @@
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 header('Access-Control-Allow-Methods: PUT');
+header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
 
-include_once(__DIR__ . '/../../config/Database.php');
-include_once(__DIR__ . '/../../models/Authors.php');
+include_once('../../config/Database.php');
+include_once('../../models/Authors.php');
 
 $database = new Database();
 $db = $database->connect();
 
-$author = new Authors($db);
+$authors = new Authors($db);
 
 $data = json_decode(file_get_contents("php://input"));
 
-$author->id = $data->id ?? null;
-$author->author = $data->author ?? null;
+// Required fields check
+if (!isset($data->id) || !isset($data->author) || empty(trim($data->author))) {
+    echo json_encode(["message" => "Missing Required Parameters"]);
+    exit;
+}
 
-if ($author->update()) {
-    echo json_encode(['message' => 'Author was updated successfully']);
+$authors->id = $data->id;
+$authors->author = $data->author;
+
+// Attempt update
+$result = $authors->update();
+
+if ($result) {
+    echo json_encode([
+        "id" => $result["id"],
+        "author" => $authors->author
+    ]);
 } else {
-    echo json_encode(['message' => 'Author Not Updated']);
+    echo json_encode(["message" => "author_id Not Found"]);
 }

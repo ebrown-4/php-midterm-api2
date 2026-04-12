@@ -12,73 +12,80 @@ class Categories
         $this->conn = $db;
     }
 
-    // READ ALL CATEGORIES
-    public function read()
+    // READ (all or single)
+    public function read($id = null)
     {
-        $query = "SELECT id, category FROM {$this->table} ORDER BY id ASC";
+        $query = "SELECT id, category FROM categories";
+
+        $params = [];
+
+        if ($id !== null) {
+            $query .= " WHERE id = :id";
+            $params[':id'] = $id;
+        }
+
         $stmt = $this->conn->prepare($query);
-        $stmt->execute();
+        $stmt->execute($params);
+
+        // Return ONE object if ID is provided
+        if ($id !== null) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $row ? $row : null;
+        }
+
+        // Otherwise return full result set
         return $stmt;
     }
 
-    // READ SINGLE CATEGORY
-    public function read_single()
-    {
-        $query = "SELECT id, category FROM {$this->table} WHERE id = :id LIMIT 1";
-        $stmt = $this->conn->prepare($query);
-
-        $stmt->bindParam(':id', $this->id);
-        $stmt->execute();
-
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($row) {
-            $this->category = $row['category'];
-        }
-    }
-
-    // CREATE CATEGORY
+    // CREATE
     public function create()
     {
-        $query = "INSERT INTO {$this->table} (category) VALUES (:category)";
+        $query = "INSERT INTO categories (category)
+                  VALUES (:category)
+                  RETURNING id";
+
         $stmt = $this->conn->prepare($query);
-
-        $this->category = htmlspecialchars(strip_tags($this->category));
-
         $stmt->bindParam(':category', $this->category);
 
-        return $stmt->execute();
+        if ($stmt->execute()) {
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        return false;
     }
 
-    // UPDATE CATEGORY
+    // UPDATE
     public function update()
     {
-        $query = "UPDATE {$this->table}
+        $query = "UPDATE categories
                   SET category = :category
-                  WHERE id = :id";
+                  WHERE id = :id
+                  RETURNING id";
 
         $stmt = $this->conn->prepare($query);
 
-        $this->category = htmlspecialchars(strip_tags($this->category));
-        $this->id = htmlspecialchars(strip_tags($this->id));
-
-        $stmt->bindParam(':category', $this->category);
         $stmt->bindParam(':id', $this->id);
+        $stmt->bindParam(':category', $this->category);
 
-        return $stmt->execute();
+        if ($stmt->execute()) {
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        return false;
     }
 
-    // DELETE CATEGORY
+    // DELETE
     public function delete()
     {
-        $query = "DELETE FROM {$this->table} WHERE id = :id";
+        $query = "DELETE FROM categories WHERE id = :id RETURNING id";
 
         $stmt = $this->conn->prepare($query);
-
-        $this->id = htmlspecialchars(strip_tags($this->id));
-
         $stmt->bindParam(':id', $this->id);
 
-        return $stmt->execute();
+        if ($stmt->execute()) {
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        return false;
     }
 }

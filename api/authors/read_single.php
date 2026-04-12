@@ -2,23 +2,35 @@
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-include_once(__DIR__ . '/../../config/Database.php');
-include_once(__DIR__ . '/../../models/Authors.php');
+include_once('../../config/Database.php');
+include_once('../../models/Authors.php');
 
 $database = new Database();
 $db = $database->connect();
 
-$author = new Authors($db);
+$authors = new Authors($db);
 
-$author->id = isset($_GET['id']) ? $_GET['id'] : die();
+// GET parameter
+$id = $_GET['id'] ?? null;
 
-$author->read_single();
+// Call model
+$result = $authors->read($id);
 
-if ($author->author) {
-    echo json_encode([
-        'id' => $author->id,
-        'author' => $author->author
-    ]);
+// If ID is provided → return ONE object or error message
+if ($id !== null) {
+    if ($result) {
+        echo json_encode($result);
+    } else {
+        echo json_encode(["message" => "author_id Not Found"]);
+    }
+    exit;
+}
+
+// Otherwise return full list
+$rows = $result->fetchAll(PDO::FETCH_ASSOC);
+
+if (count($rows) > 0) {
+    echo json_encode($rows);
 } else {
-    echo json_encode(['message' => 'Author Not Found']);
+    echo json_encode(["message" => "author_id Not Found"]);
 }

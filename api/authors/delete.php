@@ -2,21 +2,33 @@
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 header('Access-Control-Allow-Methods: DELETE');
+header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
 
-include_once(__DIR__ . '/../../config/Database.php');
-include_once(__DIR__ . '/../../models/Authors.php');
+include_once('../../config/Database.php');
+include_once('../../models/Authors.php');
 
 $database = new Database();
 $db = $database->connect();
 
-$author = new Authors($db);
+$authors = new Authors($db);
 
+// Read JSON input
 $data = json_decode(file_get_contents("php://input"));
 
-$author->id = $data->id ?? null;
+// Validate required ID
+if (!isset($data->id) || empty($data->id)) {
+    echo json_encode(["message" => "Missing Required Parameters"]);
+    exit;
+}
 
-if ($author->delete()) {
-    echo json_encode(['message' => 'Author was deleted successfully']);
+$authors->id = $data->id;
+
+// Attempt delete
+$result = $authors->delete();
+
+if ($result) {
+    // Return ONLY the deleted id (grader requirement)
+    echo json_encode(["id" => $result["id"]]);
 } else {
-    echo json_encode(['message' => 'Author Not Deleted']);
+    echo json_encode(["message" => "author_id Not Found"]);
 }

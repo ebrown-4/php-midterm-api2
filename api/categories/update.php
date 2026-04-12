@@ -2,22 +2,35 @@
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 header('Access-Control-Allow-Methods: PUT');
+header('Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With');
 
-include_once(__DIR__ . '/../../config/Database.php');
-include_once(__DIR__ . '/../../models/Categories.php');
+include_once('../../config/Database.php');
+include_once('../../models/Categories.php');
 
 $database = new Database();
 $db = $database->connect();
 
-$category = new Categories($db);
+$categories = new Categories($db);
 
 $data = json_decode(file_get_contents("php://input"));
 
-$category->id = $data->id ?? null;
-$category->category = $data->category ?? null;
+// Required fields check
+if (!isset($data->id) || !isset($data->category) || empty(trim($data->category))) {
+    echo json_encode(["message" => "Missing Required Parameters"]);
+    exit;
+}
 
-if ($category->update()) {
-    echo json_encode(['message' => 'Category was updated successfully']);
+$categories->id = $data->id;
+$categories->category = $data->category;
+
+// Attempt update
+$result = $categories->update();
+
+if ($result) {
+    echo json_encode([
+        "id" => $result["id"],
+        "category" => $categories->category
+    ]);
 } else {
-    echo json_encode(['message' => 'Category Not Updated']);
+    echo json_encode(["message" => "category_id Not Found"]);
 }
