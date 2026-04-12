@@ -10,18 +10,17 @@ $db = $database->connect();
 
 $quotes = new Quotes($db);
 
-$quotes->id = isset($_GET['id']) ? $_GET['id'] : die();
+// Validate ID
+$quotes->id = isset($_GET['id']) ? $_GET['id'] : die(json_encode(["message" => "Missing Required Parameter"]));
 
-$result = $quotes->read_single();
-$row = $result->fetch(PDO::FETCH_ASSOC);
-
-if ($row) {
+// Fetch single quote
+if ($quotes->read_single()) {
     echo json_encode([
-        "id" => $row['id'],
-        "quote" => $row['quote'],
-        "author" => $row['author'],
-        "category" => $row['category']
+        "id" => $quotes->id,
+        "quote" => $quotes->quote,
+        "author_id" => $quotes->author_id,
+        "category_id" => $quotes->category_id
     ]);
 } else {
-    echo json_encode(["message" => "No Quote Found"]);
+    echo json_encode(["message" => "Quote Not Found"]);
 }

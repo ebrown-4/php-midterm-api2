@@ -10,19 +10,16 @@ $db = $database->connect();
 
 $quotes = new Quotes($db);
 
-// If ID is provided, return a single quote
+// If ID is provided → return single quote
 if (isset($_GET['id'])) {
     $quotes->id = $_GET['id'];
 
-    $result = $quotes->read_single();
-    $row = $result->fetch(PDO::FETCH_ASSOC);
-
-    if ($row) {
+    if ($quotes->read_single()) {
         echo json_encode([
-            "id" => $row['id'],
-            "quote" => $row['quote'],
-            "author" => $row['author'],
-            "category" => $row['category']
+            "id" => $quotes->id,
+            "quote" => $quotes->quote,
+            "author_id" => $quotes->author_id,
+            "category_id" => $quotes->category_id
         ]);
     } else {
         echo json_encode(["message" => "quote_id Not Found"]);
@@ -31,7 +28,7 @@ if (isset($_GET['id'])) {
     exit;
 }
 
-// Otherwise return all quotes
+// Otherwise → return all quotes
 $result = $quotes->read();
 $num = $result->rowCount();
 
@@ -42,8 +39,8 @@ if ($num > 0) {
         $quotes_arr[] = [
             "id" => $row['id'],
             "quote" => $row['quote'],
-            "author" => $row['author'],
-            "category" => $row['category']
+            "author_id" => $row['author_id'],
+            "category_id" => $row['category_id']
         ];
     }
 
