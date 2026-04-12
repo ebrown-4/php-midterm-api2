@@ -18,16 +18,18 @@ $db = $database->connect();
 $quotes = new Quotes($db);
 
 // Validate ID
-$quotes->id = isset($_GET['id']) ? $_GET['id'] : die(json_encode(["message" => "Missing Required Parameter"]));
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    echo json_encode(["message" => "Missing Required Parameter"]);
+    exit();
+}
+
+$quotes->id = $_GET['id'];
 
 // Fetch single quote
-if ($quotes->read_single()) {
-    echo json_encode([
-        "id" => $quotes->id,
-        "quote" => $quotes->quote,
-        "author_id" => $quotes->author_id,
-        "category_id" => $quotes->category_id
-    ]);
+$result = $quotes->read_single();
+
+if ($result) {
+    echo json_encode($result);
 } else {
-    echo json_encode(["message" => "quote_id Not Found"]);
+    echo json_encode(["message" => "Quote Not Found"]);
 }

@@ -28,12 +28,7 @@ if (!isset($data->id) || !isset($data->category) || empty(trim($data->category))
 $categories->id = $data->id;
 $categories->category = $data->category;
 
-// Attempt update
-if ($categories->update()) {
-    echo json_encode([
-        "id" => $categories->id,
-        "category" => $categories->category
-    ]);
-} else {
-    echo json_encode(["message" => "category_id Not Found"]);
-}
+// Update category
+$result = $categories->update();
+
+echo json_encode($result);

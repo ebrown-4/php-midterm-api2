@@ -28,11 +28,7 @@ if (!isset($data->id) || !isset($data->author)) {
 $authors->id = $data->id;
 $authors->author = $data->author;
 
-if ($authors->update()) {
-    echo json_encode([
-        "id" => $authors->id,
-        "author" => $authors->author
-    ]);
-} else {
-    echo json_encode(["message" => "Author Not Updated"]);
-}
+// Update author
+$result = $authors->update();
+
+echo json_encode($result);

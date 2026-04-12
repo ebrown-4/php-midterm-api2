@@ -28,14 +28,6 @@ if (!isset($data->author) || empty(trim($data->author))) {
 $authors->author = $data->author;
 
 // Create author
-if ($authors->create()) {
+$result = $authors->create();
 
-    $new_id = $db->lastInsertId();
-
-    echo json_encode([
-        "id" => $new_id,
-        "author" => $authors->author
-    ]);
-} else {
-    echo json_encode(["message" => "Author Not Created"]);
-}
+echo json_encode($result);

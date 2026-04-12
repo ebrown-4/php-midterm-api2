@@ -17,16 +17,19 @@ $db = $database->connect();
 
 $authors = new Authors($db);
 
-$authors->id = isset($_GET['id']) ? $_GET['id'] : die();
+// Require ID
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    echo json_encode(["message" => "Missing Required Parameters"]);
+    exit;
+}
 
+$authors->id = $_GET['id'];
+
+// Get single author
 $result = $authors->read_single();
-$row = $result->fetch(PDO::FETCH_ASSOC);
 
-if ($row) {
-    echo json_encode([
-        "id" => $row['id'],
-        "author" => $row['author']
-    ]);
+if ($result) {
+    echo json_encode($result);
 } else {
-    echo json_encode(["message" => "author_id Not Found"]);
+    echo json_encode(["message" => "Author Not Found"]);
 }

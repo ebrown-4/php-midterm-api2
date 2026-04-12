@@ -26,8 +26,7 @@ if (!isset($data->id)) {
 
 $quotes->id = $data->id;
 
-if ($quotes->delete()) {
-    echo json_encode(["id" => $quotes->id]);
-} else {
-    echo json_encode(["message" => "quote_id Not Found"]);
-}
+// Delete quote
+$result = $quotes->delete();
+
+echo json_encode($result);

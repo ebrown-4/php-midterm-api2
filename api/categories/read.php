@@ -17,20 +17,11 @@ $db = $database->connect();
 
 $categories = new Categories($db);
 
+// Get all categories
 $result = $categories->read();
-$num = $result->rowCount();
 
-if ($num > 0) {
-    $categories_arr = [];
-
-    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-        $categories_arr[] = [
-            "id" => $row['id'],
-            "category" => $row['category']
-        ];
-    }
-
-    echo json_encode($categories_arr);
+if (!empty($result)) {
+    echo json_encode($result);
 } else {
     echo json_encode(["message" => "No Categories Found"]);
 }

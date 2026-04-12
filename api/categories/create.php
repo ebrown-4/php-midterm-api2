@@ -28,15 +28,6 @@ if (!isset($data->category) || empty(trim($data->category))) {
 $categories->category = $data->category;
 
 // Create category
-if ($categories->create()) {
+$result = $categories->create();
 
-    // Get the ID of the newly created category
-    $new_id = $db->lastInsertId();
-
-    echo json_encode([
-        "id" => $new_id,
-        "category" => $categories->category
-    ]);
-} else {
-    echo json_encode(["message" => "Category Not Created"]);
-}
+echo json_encode($result);

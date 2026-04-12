@@ -27,9 +27,7 @@ if (!isset($data->id) || empty($data->id)) {
 
 $categories->id = $data->id;
 
-// Attempt delete
-if ($categories->delete()) {
-    echo json_encode(["id" => $categories->id]);
-} else {
-    echo json_encode(["message" => "category_id Not Found"]);
-}
+// Delete category
+$result = $categories->delete();
+
+echo json_encode($result);

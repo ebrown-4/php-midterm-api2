@@ -17,20 +17,11 @@ $db = $database->connect();
 
 $authors = new Authors($db);
 
+// Get all authors
 $result = $authors->read();
-$num = $result->rowCount();
 
-if ($num > 0) {
-    $authors_arr = [];
-
-    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-        $authors_arr[] = [
-            "id" => $row['id'],
-            "author" => $row['author']
-        ];
-    }
-
-    echo json_encode($authors_arr);
+if (!empty($result)) {
+    echo json_encode($result);
 } else {
     echo json_encode(["message" => "No Authors Found"]);
 }

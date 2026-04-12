@@ -27,8 +27,4 @@ $authors->id = $data->id;
 
 $result = $authors->delete();
 
-if ($result["message"] === "Author Deleted") {
-    echo json_encode(["message" => "Author Deleted"]);
-} else {
-    echo json_encode(["message" => "Author Not Found"]);
-}
+echo json_encode($result);
