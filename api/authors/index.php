@@ -26,54 +26,59 @@ switch ($method) {
 
             if (!$result) {
                 echo json_encode(["message" => "author_id Not Found"]);
-            } else {
-                echo json_encode($result);
+                exit();
             }
-            break;
+
+            echo json_encode($result);
+            exit();
         }
 
         $result = $authors->read();
 
         if (empty($result)) {
             echo json_encode(["message" => "No Authors Found"]);
-        } else {
-            echo json_encode($result);
+            exit();
         }
-        break;
+
+        echo json_encode($result);
+        exit();
+
 
     case 'POST':
         $data = json_decode(file_get_contents("php://input"));
 
         if (!isset($data->author) || empty(trim($data->author))) {
             echo json_encode(["message" => "Missing Required Parameters"]);
-            break;
+            exit();
         }
 
         $authors->author = $data->author;
 
         echo json_encode($authors->create());
-        break;
+        exit();
+
 
     case 'PUT':
         $data = json_decode(file_get_contents("php://input"));
 
         if (!isset($data->id) || !isset($data->author)) {
             echo json_encode(["message" => "Missing Required Parameters"]);
-            break;
+            exit();
         }
 
         $authors->id = $data->id;
         $authors->author = $data->author;
 
         echo json_encode($authors->update());
-        break;
+        exit();
+
 
     case 'DELETE':
         $data = json_decode(file_get_contents("php://input"));
 
         if (!isset($data->id)) {
             echo json_encode(["message" => "Missing Required Parameters"]);
-            break;
+            exit();
         }
 
         $authors->id = $data->id;
@@ -84,5 +89,5 @@ switch ($method) {
             "id" => $data->id,
             "message" => $result["message"]
         ]);
-        break;
+        exit();
 }

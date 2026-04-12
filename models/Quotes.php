@@ -1,7 +1,6 @@
 <?php
 class Quotes
 {
-
     private $conn;
     private $table = 'quotes';
 
@@ -32,12 +31,13 @@ class Quotes
         $conditions = [];
         $params = [];
 
-        if (!empty($this->author_id)) {
+        // IMPORTANT FIX: use isset() instead of empty()
+        if (isset($this->author_id)) {
             $conditions[] = 'q.author_id = :author_id';
             $params[':author_id'] = $this->author_id;
         }
 
-        if (!empty($this->category_id)) {
+        if (isset($this->category_id)) {
             $conditions[] = 'q.category_id = :category_id';
             $params[':category_id'] = $this->category_id;
         }
@@ -52,8 +52,14 @@ class Quotes
             $stmt->bindValue($key, $val);
         }
 
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // Prevent HTML warnings if SQL fails
+        if (!$stmt->execute()) {
+            return [];
+        }
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $rows ?: [];
     }
 
     // READ SINGLE

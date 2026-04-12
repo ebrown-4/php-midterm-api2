@@ -26,54 +26,59 @@ switch ($method) {
 
             if (!$result) {
                 echo json_encode(["message" => "category_id Not Found"]);
-            } else {
-                echo json_encode($result);
+                exit();
             }
-            break;
+
+            echo json_encode($result);
+            exit();
         }
 
         $result = $categories->read();
 
         if (empty($result)) {
             echo json_encode(["message" => "No Categories Found"]);
-        } else {
-            echo json_encode($result);
+            exit();
         }
-        break;
+
+        echo json_encode($result);
+        exit();
+
 
     case 'POST':
         $data = json_decode(file_get_contents("php://input"));
 
         if (!isset($data->category) || empty(trim($data->category))) {
             echo json_encode(["message" => "Missing Required Parameters"]);
-            break;
+            exit();
         }
 
         $categories->category = $data->category;
 
         echo json_encode($categories->create());
-        break;
+        exit();
+
 
     case 'PUT':
         $data = json_decode(file_get_contents("php://input"));
 
         if (!isset($data->id) || !isset($data->category)) {
             echo json_encode(["message" => "Missing Required Parameters"]);
-            break;
+            exit();
         }
 
         $categories->id = $data->id;
         $categories->category = $data->category;
 
         echo json_encode($categories->update());
-        break;
+        exit();
+
 
     case 'DELETE':
         $data = json_decode(file_get_contents("php://input"));
 
         if (!isset($data->id)) {
             echo json_encode(["message" => "Missing Required Parameters"]);
-            break;
+            exit();
         }
 
         $categories->id = $data->id;
@@ -84,5 +89,5 @@ switch ($method) {
             "id" => $data->id,
             "message" => $result["message"]
         ]);
-        break;
+        exit();
 }

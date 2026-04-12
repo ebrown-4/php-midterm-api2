@@ -28,10 +28,11 @@ switch ($method) {
 
             if (!$result) {
                 echo json_encode(["message" => "No Quotes Found"]);
-            } else {
-                echo json_encode($result);
+                exit();
             }
-            break;
+
+            echo json_encode($result);
+            exit();
         }
 
         // GET by author_id
@@ -41,10 +42,11 @@ switch ($method) {
 
             if (empty($result)) {
                 echo json_encode(["message" => "author_id Not Found"]);
-            } else {
-                echo json_encode($result);
+                exit();
             }
-            break;
+
+            echo json_encode($result);
+            exit();
         }
 
         // GET by category_id
@@ -54,10 +56,11 @@ switch ($method) {
 
             if (empty($result)) {
                 echo json_encode(["message" => "category_id Not Found"]);
-            } else {
-                echo json_encode($result);
+                exit();
             }
-            break;
+
+            echo json_encode($result);
+            exit();
         }
 
         // GET all quotes
@@ -65,17 +68,19 @@ switch ($method) {
 
         if (empty($result)) {
             echo json_encode(["message" => "No Quotes Found"]);
-        } else {
-            echo json_encode($result);
+            exit();
         }
-        break;
+
+        echo json_encode($result);
+        exit();
+
 
     case 'POST':
         $data = json_decode(file_get_contents("php://input"));
 
         if (!isset($data->quote) || !isset($data->author_id) || !isset($data->category_id)) {
             echo json_encode(["message" => "Missing Required Parameters"]);
-            break;
+            exit();
         }
 
         $quotes->quote = $data->quote;
@@ -83,14 +88,15 @@ switch ($method) {
         $quotes->category_id = $data->category_id;
 
         echo json_encode($quotes->create());
-        break;
+        exit();
+
 
     case 'PUT':
         $data = json_decode(file_get_contents("php://input"));
 
         if (!isset($data->id) || !isset($data->quote) || !isset($data->author_id) || !isset($data->category_id)) {
             echo json_encode(["message" => "Missing Required Parameters"]);
-            break;
+            exit();
         }
 
         $quotes->id = $data->id;
@@ -99,14 +105,15 @@ switch ($method) {
         $quotes->category_id = $data->category_id;
 
         echo json_encode($quotes->update());
-        break;
+        exit();
+
 
     case 'DELETE':
         $data = json_decode(file_get_contents("php://input"));
 
         if (!isset($data->id)) {
             echo json_encode(["message" => "Missing Required Parameters"]);
-            break;
+            exit();
         }
 
         $quotes->id = $data->id;
@@ -117,5 +124,5 @@ switch ($method) {
             "id" => $data->id,
             "message" => $result["message"]
         ]);
-        break;
+        exit();
 }
