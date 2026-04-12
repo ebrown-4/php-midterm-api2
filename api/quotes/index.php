@@ -63,7 +63,10 @@ switch ($method) {
             exit();
         }
 
-        // GET all quotes
+        // GET all quotes — IMPORTANT FIX: reset filters
+        $quotes->author_id = null;
+        $quotes->category_id = null;
+
         $result = $quotes->read();
 
         if (empty($result)) {
