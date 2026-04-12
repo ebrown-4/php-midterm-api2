@@ -17,7 +17,10 @@ class Quotes
     // READ ALL
     public function read()
     {
-        $query = "SELECT id, quote, author_id, category_id FROM " . $this->table . " ORDER BY id ASC";
+        $query = "SELECT id, quote, author_id, category_id 
+                  FROM " . $this->table . " 
+                  ORDER BY id ASC";
+
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
@@ -26,9 +29,10 @@ class Quotes
     // READ SINGLE
     public function read_single()
     {
-        $query = "SELECT id, quote, author_id, category_id 
-                  FROM " . $this->table . " 
-                  WHERE id = :id LIMIT 1";
+        $query = "SELECT id, quote, author_id, category_id
+                  FROM " . $this->table . "
+                  WHERE id = :id
+                  LIMIT 1";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
@@ -49,8 +53,8 @@ class Quotes
     // CREATE
     public function create()
     {
-        $query = "INSERT INTO " . $this->table . " 
-                  (quote, author_id, category_id) 
+        $query = "INSERT INTO " . $this->table . "
+                  (quote, author_id, category_id)
                   VALUES (:quote, :author_id, :category_id)";
 
         $stmt = $this->conn->prepare($query);
