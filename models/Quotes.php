@@ -6,8 +6,8 @@ class Quotes
 
     public $id;
     public $quote;
-    public $author_id;
-    public $category_id;
+    public $author_id = null;
+    public $category_id = null;
 
     public function __construct($db)
     {
@@ -31,13 +31,13 @@ class Quotes
         $conditions = [];
         $params = [];
 
-        // IMPORTANT FIX: use isset() instead of empty()
-        if (isset($this->author_id)) {
+        // FIX: Only apply filters if user actually passed them
+        if ($this->author_id !== null) {
             $conditions[] = 'q.author_id = :author_id';
             $params[':author_id'] = $this->author_id;
         }
 
-        if (isset($this->category_id)) {
+        if ($this->category_id !== null) {
             $conditions[] = 'q.category_id = :category_id';
             $params[':category_id'] = $this->category_id;
         }
