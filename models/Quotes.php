@@ -21,17 +21,14 @@ class Quotes
             SELECT 
                 q.id,
                 q.quote,
-                a.author,
-                c.category
+                q.author_id,
+                q.category_id
             FROM quotes q
-            LEFT JOIN authors a ON q.author_id = a.id
-            LEFT JOIN categories c ON q.category_id = c.id
         ';
 
         $conditions = [];
         $params = [];
 
-        // FIX: Only apply filters if user actually passed them
         if ($this->author_id !== null) {
             $conditions[] = 'q.author_id = :author_id';
             $params[':author_id'] = $this->author_id;
@@ -52,14 +49,11 @@ class Quotes
             $stmt->bindValue($key, $val);
         }
 
-        // Prevent HTML warnings if SQL fails
         if (!$stmt->execute()) {
             return [];
         }
 
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return $rows ?: [];
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 
     // READ SINGLE
@@ -69,11 +63,9 @@ class Quotes
             SELECT 
                 q.id,
                 q.quote,
-                a.author,
-                c.category
+                q.author_id,
+                q.category_id
             FROM quotes q
-            LEFT JOIN authors a ON q.author_id = a.id
-            LEFT JOIN categories c ON q.category_id = c.id
             WHERE q.id = :id
             LIMIT 1
         ';
