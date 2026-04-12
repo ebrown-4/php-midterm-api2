@@ -1,12 +1,15 @@
 <?php
+// Turn off error display for clean JSON output
 error_reporting(0);
 ini_set('display_errors', 0);
 
+// CORS + JSON headers
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Origin, Accept, Content-Type, X-Requested-With');
 
+// Handle preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
@@ -14,21 +17,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 include_once '../../config/Database.php';
 include_once '../../models/Quotes.php';
 
+// Connect to database
 $database = new Database();
 $db = $database->connect();
 
-// ⭐ FIX: Handle DB connection failure
+// If DB fails (Render cold start), return expected message
 if ($db === null) {
     echo json_encode(["message" => "No Quotes Found"]);
     exit();
 }
 
 $quotes = new Quotes($db);
-
 $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
 
+    /* -----------------------------------------
+       GET REQUESTS
+       ----------------------------------------- */
     case 'GET':
 
         // GET by id
@@ -48,6 +54,7 @@ switch ($method) {
         // GET by author_id
         if (isset($_GET['author_id'])) {
 
+            // Validate author first
             if (!$quotes->author_exists($_GET['author_id'])) {
                 echo json_encode(["message" => "author_id Not Found"]);
                 exit();
@@ -61,6 +68,7 @@ switch ($method) {
         // GET by category_id
         if (isset($_GET['category_id'])) {
 
+            // Validate category first
             if (!$quotes->category_exists($_GET['category_id'])) {
                 echo json_encode(["message" => "category_id Not Found"]);
                 exit();
@@ -86,6 +94,9 @@ switch ($method) {
         exit();
 
 
+        /* -----------------------------------------
+       POST REQUESTS
+       ----------------------------------------- */
     case 'POST':
         $data = json_decode(file_get_contents("php://input"));
 
@@ -102,6 +113,9 @@ switch ($method) {
         exit();
 
 
+        /* -----------------------------------------
+       PUT REQUESTS
+       ----------------------------------------- */
     case 'PUT':
         $data = json_decode(file_get_contents("php://input"));
 
@@ -119,6 +133,9 @@ switch ($method) {
         exit();
 
 
+        /* -----------------------------------------
+       DELETE REQUESTS
+       ----------------------------------------- */
     case 'DELETE':
         $data = json_decode(file_get_contents("php://input"));
 
@@ -128,7 +145,6 @@ switch ($method) {
         }
 
         $quotes->id = $data->id;
-
         $result = $quotes->delete();
 
         echo json_encode([
