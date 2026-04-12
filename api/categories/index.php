@@ -25,7 +25,7 @@ switch ($method) {
             $result = $categories->read_single();
 
             if (!$result) {
-                echo json_encode(["message" => "Category Not Found"]);
+                echo json_encode(["message" => "category_id Not Found"]);
             } else {
                 echo json_encode($result);
             }
@@ -78,6 +78,11 @@ switch ($method) {
 
         $categories->id = $data->id;
 
-        echo json_encode($categories->delete());
+        $result = $categories->delete();
+
+        echo json_encode([
+            "id" => $data->id,
+            "message" => $result["message"]
+        ]);
         break;
 }

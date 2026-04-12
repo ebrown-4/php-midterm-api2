@@ -21,6 +21,7 @@ switch ($method) {
 
     case 'GET':
 
+        // GET by id
         if (isset($_GET['id'])) {
             $quotes->id = $_GET['id'];
             $result = $quotes->read_single();
@@ -33,13 +34,33 @@ switch ($method) {
             break;
         }
 
+        // GET by author_id
         if (isset($_GET['author_id'])) {
             $quotes->author_id = $_GET['author_id'];
-        }
-        if (isset($_GET['category_id'])) {
-            $quotes->category_id = $_GET['category_id'];
+            $result = $quotes->read();
+
+            if (empty($result)) {
+                echo json_encode(["message" => "author_id Not Found"]);
+            } else {
+                echo json_encode($result);
+            }
+            break;
         }
 
+        // GET by category_id
+        if (isset($_GET['category_id'])) {
+            $quotes->category_id = $_GET['category_id'];
+            $result = $quotes->read();
+
+            if (empty($result)) {
+                echo json_encode(["message" => "category_id Not Found"]);
+            } else {
+                echo json_encode($result);
+            }
+            break;
+        }
+
+        // GET all quotes
         $result = $quotes->read();
 
         if (empty($result)) {
@@ -89,6 +110,12 @@ switch ($method) {
         }
 
         $quotes->id = $data->id;
-        echo json_encode($quotes->delete());
+
+        $result = $quotes->delete();
+
+        echo json_encode([
+            "id" => $data->id,
+            "message" => $result["message"]
+        ]);
         break;
 }

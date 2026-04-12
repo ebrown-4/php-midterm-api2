@@ -4,6 +4,7 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Methods: DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Origin, Accept, Content-Type, X-Requested-With');
 
+// Handle preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
@@ -18,13 +19,19 @@ $authors = new Authors($db);
 
 $data = json_decode(file_get_contents("php://input"));
 
+// Required field check
 if (!isset($data->id) || empty($data->id)) {
     echo json_encode(["message" => "Missing Required Parameters"]);
-    exit;
+    exit();
 }
 
 $authors->id = $data->id;
 
+// Delete author
 $result = $authors->delete();
 
-echo json_encode($result);
+// Tester requires: { "id": X, "message": "Author Deleted" }
+echo json_encode([
+    "id" => $data->id,
+    "message" => $result["message"]
+]);

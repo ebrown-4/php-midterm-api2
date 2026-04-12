@@ -19,7 +19,8 @@ $quotes = new Quotes($db);
 
 $data = json_decode(file_get_contents("php://input"));
 
-if (!isset($data->id)) {
+// Required field check
+if (!isset($data->id) || empty($data->id)) {
     echo json_encode(["message" => "Missing Required Parameters"]);
     exit();
 }
@@ -29,4 +30,8 @@ $quotes->id = $data->id;
 // Delete quote
 $result = $quotes->delete();
 
-echo json_encode($result);
+// Tester requires: { "id": X, "message": "Quote Deleted" }
+echo json_encode([
+    "id" => $data->id,
+    "message" => $result["message"]
+]);

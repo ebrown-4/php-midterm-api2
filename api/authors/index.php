@@ -19,25 +19,19 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
 
-    // -------------------------
-    // GET REQUESTS
-    // -------------------------
     case 'GET':
-
-        // GET /api/authors/?id=5
         if (isset($_GET['id'])) {
             $authors->id = $_GET['id'];
             $result = $authors->read_single();
 
             if (!$result) {
-                echo json_encode(["message" => "Author Not Found"]);
+                echo json_encode(["message" => "author_id Not Found"]);
             } else {
                 echo json_encode($result);
             }
             break;
         }
 
-        // GET /api/authors/
         $result = $authors->read();
 
         if (empty($result)) {
@@ -47,10 +41,6 @@ switch ($method) {
         }
         break;
 
-
-    // -------------------------
-    // POST REQUESTS
-    // -------------------------
     case 'POST':
         $data = json_decode(file_get_contents("php://input"));
 
@@ -64,10 +54,6 @@ switch ($method) {
         echo json_encode($authors->create());
         break;
 
-
-    // -------------------------
-    // PUT REQUESTS
-    // -------------------------
     case 'PUT':
         $data = json_decode(file_get_contents("php://input"));
 
@@ -82,10 +68,6 @@ switch ($method) {
         echo json_encode($authors->update());
         break;
 
-
-    // -------------------------
-    // DELETE REQUESTS
-    // -------------------------
     case 'DELETE':
         $data = json_decode(file_get_contents("php://input"));
 
@@ -96,6 +78,11 @@ switch ($method) {
 
         $authors->id = $data->id;
 
-        echo json_encode($authors->delete());
+        $result = $authors->delete();
+
+        echo json_encode([
+            "id" => $data->id,
+            "message" => $result["message"]
+        ]);
         break;
 }

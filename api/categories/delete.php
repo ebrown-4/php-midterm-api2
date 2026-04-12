@@ -30,4 +30,7 @@ $categories->id = $data->id;
 // Delete category
 $result = $categories->delete();
 
-echo json_encode($result);
+echo json_encode([
+    "id" => $data->id,
+    "message" => $result["message"]
+]);
