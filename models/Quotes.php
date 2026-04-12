@@ -1,6 +1,7 @@
 <?php
 class Quotes
 {
+
     private $conn;
     private $table = 'quotes';
 
@@ -14,48 +15,77 @@ class Quotes
         $this->conn = $db;
     }
 
-    // READ ALL
+    // READ ALL (with optional filters)
     public function read()
     {
-        $query = "SELECT id, quote, author_id, category_id 
-                  FROM " . $this->table . " 
-                  ORDER BY id ASC";
+        $query = '
+            SELECT 
+                q.id,
+                q.quote,
+                a.author,
+                c.category
+            FROM quotes q
+            LEFT JOIN authors a ON q.author_id = a.id
+            LEFT JOIN categories c ON q.category_id = c.id
+        ';
+
+        $conditions = [];
+        $params = [];
+
+        if (!empty($this->author_id)) {
+            $conditions[] = 'q.author_id = :author_id';
+            $params[':author_id'] = $this->author_id;
+        }
+
+        if (!empty($this->category_id)) {
+            $conditions[] = 'q.category_id = :category_id';
+            $params[':category_id'] = $this->category_id;
+        }
+
+        if ($conditions) {
+            $query .= ' WHERE ' . implode(' AND ', $conditions);
+        }
 
         $stmt = $this->conn->prepare($query);
+
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+
         $stmt->execute();
-        return $stmt;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // READ SINGLE
     public function read_single()
     {
-        $query = "SELECT id, quote, author_id, category_id
-                  FROM " . $this->table . "
-                  WHERE id = :id
-                  LIMIT 1";
+        $query = '
+            SELECT 
+                q.id,
+                q.quote,
+                a.author,
+                c.category
+            FROM quotes q
+            LEFT JOIN authors a ON q.author_id = a.id
+            LEFT JOIN categories c ON q.category_id = c.id
+            WHERE q.id = :id
+            LIMIT 1
+        ';
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
         $stmt->execute();
 
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($row) {
-            $this->quote = $row['quote'];
-            $this->author_id = $row['author_id'];
-            $this->category_id = $row['category_id'];
-            return true;
-        }
-
-        return false;
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
     // CREATE
     public function create()
     {
-        $query = "INSERT INTO " . $this->table . "
-                  (quote, author_id, category_id)
-                  VALUES (:quote, :author_id, :category_id)";
+        $query = '
+            INSERT INTO quotes (quote, author_id, category_id)
+            VALUES (:quote, :author_id, :category_id)
+        ';
 
         $stmt = $this->conn->prepare($query);
 
@@ -64,44 +94,62 @@ class Quotes
         $stmt->bindParam(':category_id', $this->category_id);
 
         if ($stmt->execute()) {
-            $this->id = $this->conn->lastInsertId();
-            return true;
+            return [
+                "id" => $this->conn->lastInsertId(),
+                "quote" => $this->quote,
+                "author_id" => $this->author_id,
+                "category_id" => $this->category_id
+            ];
         }
 
-        return false;
+        return ["message" => "Quote Not Created"];
     }
 
     // UPDATE
     public function update()
     {
-        $query = "UPDATE " . $this->table . "
-                  SET quote = :quote,
-                      author_id = :author_id,
-                      category_id = :category_id
-                  WHERE id = :id";
+        $query = '
+            UPDATE quotes
+            SET quote = :quote,
+                author_id = :author_id,
+                category_id = :category_id
+            WHERE id = :id
+        ';
 
         $stmt = $this->conn->prepare($query);
 
+        $stmt->bindParam(':id', $this->id);
         $stmt->bindParam(':quote', $this->quote);
         $stmt->bindParam(':author_id', $this->author_id);
         $stmt->bindParam(':category_id', $this->category_id);
-        $stmt->bindParam(':id', $this->id);
 
-        $stmt->execute();
+        if ($stmt->execute()) {
+            return [
+                "id" => $this->id,
+                "quote" => $this->quote,
+                "author_id" => $this->author_id,
+                "category_id" => $this->category_id
+            ];
+        }
 
-        return $stmt->rowCount() > 0;
+        return ["message" => "Quote Not Updated"];
     }
 
     // DELETE
     public function delete()
     {
-        $query = "DELETE FROM " . $this->table . " WHERE id = :id";
+        $query = '
+            DELETE FROM quotes
+            WHERE id = :id
+        ';
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
 
-        $stmt->execute();
+        if ($stmt->execute()) {
+            return ["message" => "Quote Deleted"];
+        }
 
-        return $stmt->rowCount() > 0;
+        return ["message" => "Quote Not Deleted"];
     }
 }
