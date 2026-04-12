@@ -14,7 +14,32 @@ class Quotes
         $this->conn = $db;
     }
 
+    // ---------------------------
+    // VALIDATION HELPERS
+    // ---------------------------
+
+    public function author_exists($id)
+    {
+        $query = "SELECT id FROM authors WHERE id = :id LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC) ? true : false;
+    }
+
+    public function category_exists($id)
+    {
+        $query = "SELECT id FROM categories WHERE id = :id LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC) ? true : false;
+    }
+
+    // ---------------------------
     // READ ALL (with optional filters)
+    // ---------------------------
+
     public function read()
     {
         $query = '
@@ -55,7 +80,10 @@ class Quotes
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 
+    // ---------------------------
     // READ SINGLE
+    // ---------------------------
+
     public function read_single()
     {
         $query = '
@@ -78,7 +106,10 @@ class Quotes
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
+    // ---------------------------
     // CREATE
+    // ---------------------------
+
     public function create()
     {
         $query = '
@@ -104,7 +135,10 @@ class Quotes
         return ["message" => "Quote Not Created"];
     }
 
+    // ---------------------------
     // UPDATE
+    // ---------------------------
+
     public function update()
     {
         $query = '
@@ -134,7 +168,10 @@ class Quotes
         return ["message" => "Quote Not Updated"];
     }
 
+    // ---------------------------
     // DELETE
+    // ---------------------------
+
     public function delete()
     {
         $query = '

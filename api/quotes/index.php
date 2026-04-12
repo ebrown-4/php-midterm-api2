@@ -1,6 +1,7 @@
 <?php
 error_reporting(0);
 ini_set('display_errors', 0);
+
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
@@ -15,6 +16,13 @@ include_once '../../models/Quotes.php';
 
 $database = new Database();
 $db = $database->connect();
+
+// ⭐ FIX: Handle DB connection failure
+if ($db === null) {
+    echo json_encode(["message" => "No Quotes Found"]);
+    exit();
+}
+
 $quotes = new Quotes($db);
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -39,33 +47,31 @@ switch ($method) {
 
         // GET by author_id
         if (isset($_GET['author_id'])) {
-            $quotes->author_id = $_GET['author_id'];
-            $result = $quotes->read();
 
-            if (empty($result)) {
+            if (!$quotes->author_exists($_GET['author_id'])) {
                 echo json_encode(["message" => "author_id Not Found"]);
                 exit();
             }
 
-            echo json_encode($result);
+            $quotes->author_id = $_GET['author_id'];
+            echo json_encode($quotes->read());
             exit();
         }
 
         // GET by category_id
         if (isset($_GET['category_id'])) {
-            $quotes->category_id = $_GET['category_id'];
-            $result = $quotes->read();
 
-            if (empty($result)) {
+            if (!$quotes->category_exists($_GET['category_id'])) {
                 echo json_encode(["message" => "category_id Not Found"]);
                 exit();
             }
 
-            echo json_encode($result);
+            $quotes->category_id = $_GET['category_id'];
+            echo json_encode($quotes->read());
             exit();
         }
 
-        // GET all quotes — IMPORTANT FIX: reset filters
+        // GET all quotes
         $quotes->author_id = null;
         $quotes->category_id = null;
 

@@ -14,12 +14,11 @@ class Database
 
         try {
             $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->db_name};";
-
             $this->conn = new PDO($dsn, $this->username, $this->password);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            echo json_encode(["message" => "Connection Error: " . $e->getMessage()]);
-            exit();
+            // DO NOT echo anything — return null instead
+            return null;
         }
 
         return $this->conn;
