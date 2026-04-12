@@ -1,5 +1,5 @@
 <?php
-class Author
+class Authors
 {
     private $conn;
     private $table = 'authors';

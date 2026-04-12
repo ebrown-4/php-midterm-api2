@@ -1,5 +1,5 @@
 <?php
-class Quote
+class Quotes
 {
     private $conn;
     private $table = 'quotes';
@@ -16,7 +16,7 @@ class Quote
         $this->conn = $db;
     }
 
-    // READ ALL (with optional filters)
+    // READ ALL
     public function read()
     {
         $query = 'SELECT 
@@ -27,31 +27,9 @@ class Quote
                   LEFT JOIN authors a ON q.author_id = a.id
                   LEFT JOIN categories c ON q.category_id = c.id';
 
-        // Optional filters
-        $conditions = [];
-        $params = [];
-
-        if (!empty($_GET['author_id'])) {
-            $conditions[] = 'q.author_id = :author_id';
-            $params[':author_id'] = $_GET['author_id'];
-        }
-
-        if (!empty($_GET['category_id'])) {
-            $conditions[] = 'q.category_id = :category_id';
-            $params[':category_id'] = $_GET['category_id'];
-        }
-
-        if (!empty($conditions)) {
-            $query .= ' WHERE ' . implode(' AND ', $conditions);
-        }
-
         $stmt = $this->conn->prepare($query);
-
-        foreach ($params as $key => $value) {
-            $stmt->bindValue($key, $value);
-        }
-
         $stmt->execute();
+
         return $stmt;
     }
 
