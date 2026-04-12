@@ -14,7 +14,6 @@ $quotes = new Quotes($db);
 
 $data = json_decode(file_get_contents("php://input"));
 
-// Required fields check
 if (
     !isset($data->quote) ||
     !isset($data->author_id) ||
@@ -29,10 +28,7 @@ $quotes->quote = $data->quote;
 $quotes->author_id = $data->author_id;
 $quotes->category_id = $data->category_id;
 
-// Attempt create
 if ($quotes->create()) {
-
-    // Get the ID of the newly created quote
     $new_id = $db->lastInsertId();
 
     echo json_encode([

@@ -12,10 +12,9 @@ $db = $database->connect();
 
 $authors = new Authors($db);
 
-// Read JSON input
 $data = json_decode(file_get_contents("php://input"));
 
-// Validate required ID
+// Required field check
 if (!isset($data->id) || empty($data->id)) {
     echo json_encode(["message" => "Missing Required Parameters"]);
     exit;
@@ -23,7 +22,6 @@ if (!isset($data->id) || empty($data->id)) {
 
 $authors->id = $data->id;
 
-// Attempt delete
 if ($authors->delete()) {
     echo json_encode(["id" => $authors->id]);
 } else {

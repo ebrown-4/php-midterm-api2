@@ -10,27 +10,40 @@ $db = $database->connect();
 
 $authors = new Authors($db);
 
-// GET parameter
-$id = $_GET['id'] ?? null;
+// If ID is provided, return a single author
+if (isset($_GET['id'])) {
+    $authors->id = $_GET['id'];
 
-// Call model
-$result = $authors->read($id);
+    $result = $authors->read_single();
+    $row = $result->fetch(PDO::FETCH_ASSOC);
 
-// If ID is provided → return ONE object or error message
-if ($id !== null) {
-    if ($result) {
-        echo json_encode($result);
+    if ($row) {
+        echo json_encode([
+            "id" => $row['id'],
+            "author" => $row['author']
+        ]);
     } else {
         echo json_encode(["message" => "author_id Not Found"]);
     }
+
     exit;
 }
 
-// Otherwise return full list
-$rows = $result->fetchAll(PDO::FETCH_ASSOC);
+// Otherwise return all authors
+$result = $authors->read();
+$num = $result->rowCount();
 
-if (count($rows) > 0) {
-    echo json_encode($rows);
+if ($num > 0) {
+    $authors_arr = [];
+
+    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        $authors_arr[] = [
+            "id" => $row['id'],
+            "author" => $row['author']
+        ];
+    }
+
+    echo json_encode($authors_arr);
 } else {
-    echo json_encode(["message" => "author_id Not Found"]);
+    echo json_encode(["message" => "No Authors Found"]);
 }

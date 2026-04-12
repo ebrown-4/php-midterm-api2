@@ -14,13 +14,11 @@ $quotes = new Quotes($db);
 
 $data = json_decode(file_get_contents("php://input"));
 
-// Required fields check
 if (
     !isset($data->id) ||
     !isset($data->quote) ||
     !isset($data->author_id) ||
-    !isset($data->category_id) ||
-    empty(trim($data->quote))
+    !isset($data->category_id)
 ) {
     echo json_encode(["message" => "Missing Required Parameters"]);
     exit;
@@ -31,7 +29,6 @@ $quotes->quote = $data->quote;
 $quotes->author_id = $data->author_id;
 $quotes->category_id = $data->category_id;
 
-// Attempt update
 if ($quotes->update()) {
     echo json_encode([
         "id" => $quotes->id,
@@ -40,5 +37,5 @@ if ($quotes->update()) {
         "category_id" => $quotes->category_id
     ]);
 } else {
-    echo json_encode(["message" => "quote_id Not Found"]);
+    echo json_encode(["message" => "Quote Not Updated"]);
 }

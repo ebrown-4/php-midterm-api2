@@ -14,17 +14,15 @@ $quotes = new Quotes($db);
 
 $data = json_decode(file_get_contents("php://input"));
 
-// Required field check
-if (!isset($data->id) || empty($data->id)) {
+if (!isset($data->id)) {
     echo json_encode(["message" => "Missing Required Parameters"]);
     exit;
 }
 
 $quotes->id = $data->id;
 
-// Attempt delete
 if ($quotes->delete()) {
     echo json_encode(["id" => $quotes->id]);
 } else {
-    echo json_encode(["message" => "quote_id Not Found"]);
+    echo json_encode(["message" => "Quote Not Deleted"]);
 }

@@ -14,8 +14,8 @@ $authors = new Authors($db);
 
 $data = json_decode(file_get_contents("php://input"));
 
-// Required fields check
-if (!isset($data->id) || !isset($data->author) || empty(trim($data->author))) {
+// Required fields
+if (!isset($data->id) || !isset($data->author)) {
     echo json_encode(["message" => "Missing Required Parameters"]);
     exit;
 }
@@ -23,14 +23,11 @@ if (!isset($data->id) || !isset($data->author) || empty(trim($data->author))) {
 $authors->id = $data->id;
 $authors->author = $data->author;
 
-// Attempt update
-$result = $authors->update();
-
-if ($result) {
+if ($authors->update()) {
     echo json_encode([
-        "id" => $result["id"],
+        "id" => $authors->id,
         "author" => $authors->author
     ]);
 } else {
-    echo json_encode(["message" => "author_id Not Found"]);
+    echo json_encode(["message" => "Author Not Updated"]);
 }

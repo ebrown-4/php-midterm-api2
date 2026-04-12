@@ -49,5 +49,5 @@ if ($num > 0) {
 
     echo json_encode($quotes_arr);
 } else {
-    echo json_encode(["message" => "quote_id Not Found"]);
+    echo json_encode(["message" => "No Quotes Found"]);
 }

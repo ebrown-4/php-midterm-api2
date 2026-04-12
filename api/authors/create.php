@@ -12,10 +12,9 @@ $db = $database->connect();
 
 $authors = new Authors($db);
 
-// Read JSON input
 $data = json_decode(file_get_contents("php://input"));
 
-// Validate required field
+// Required field check
 if (!isset($data->author) || empty(trim($data->author))) {
     echo json_encode(["message" => "Missing Required Parameters"]);
     exit;
@@ -26,7 +25,6 @@ $authors->author = $data->author;
 // Create author
 if ($authors->create()) {
 
-    // Get the ID of the newly created author
     $new_id = $db->lastInsertId();
 
     echo json_encode([

@@ -1,26 +1,27 @@
 <?php
+header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-include_once '../../config/Database.php';
-include_once '../../models/Quote.php';
+include_once('../../config/Database.php');
+include_once('../../models/Quotes.php');
 
 $database = new Database();
 $db = $database->connect();
 
-$quote = new Quote($db);
+$quotes = new Quotes($db);
 
-$quote->id = isset($_GET['id']) ? $_GET['id'] : die();
+$quotes->id = isset($_GET['id']) ? $_GET['id'] : die();
 
-$result = $quote->read_single();
+$result = $quotes->read_single();
 $row = $result->fetch(PDO::FETCH_ASSOC);
 
 if ($row) {
     echo json_encode([
-        'id' => $row['id'],
-        'quote' => $row['quote'],
-        'author' => $row['author'],
-        'category' => $row['category']
+        "id" => $row['id'],
+        "quote" => $row['quote'],
+        "author" => $row['author'],
+        "category" => $row['category']
     ]);
 } else {
-    echo json_encode(['message' => 'No Quotes Found']);
+    echo json_encode(["message" => "No Quote Found"]);
 }

@@ -45,5 +45,5 @@ if ($num > 0) {
 
     echo json_encode($categories_arr);
 } else {
-    echo json_encode(["message" => "category_id Not Found"]);
+    echo json_encode(["message" => "No Categories Found"]);
 }

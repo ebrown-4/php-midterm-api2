@@ -1,14 +1,16 @@
 <?php
+header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-include_once '../../config/Database.php';
-include_once '../../models/Author.php';
+include_once('../../config/Database.php');
+include_once('../../models/Authors.php');
 
 $database = new Database();
 $db = $database->connect();
 
-$author = new Author($db);
-$result = $author->read();
+$authors = new Authors($db);
+
+$result = $authors->read();
 $num = $result->rowCount();
 
 if ($num > 0) {
@@ -16,12 +18,12 @@ if ($num > 0) {
 
     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
         $authors_arr[] = [
-            'id' => $row['id'],
-            'author' => $row['author']
+            "id" => $row['id'],
+            "author" => $row['author']
         ];
     }
 
     echo json_encode($authors_arr);
 } else {
-    echo json_encode(['message' => 'No Authors Found']);
+    echo json_encode(["message" => "No Authors Found"]);
 }
