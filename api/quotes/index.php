@@ -19,12 +19,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($method) {
 
-    // -------------------------
-    // GET REQUESTS
-    // -------------------------
     case 'GET':
 
-        // GET /api/quotes/?id=10
         if (isset($_GET['id'])) {
             $quotes->id = $_GET['id'];
             $result = $quotes->read_single();
@@ -37,7 +33,6 @@ switch ($method) {
             break;
         }
 
-        // GET /api/quotes/?author_id=5 or category_id=4
         if (isset($_GET['author_id'])) {
             $quotes->author_id = $_GET['author_id'];
         }
@@ -54,10 +49,6 @@ switch ($method) {
         }
         break;
 
-
-    // -------------------------
-    // POST REQUESTS
-    // -------------------------
     case 'POST':
         $data = json_decode(file_get_contents("php://input"));
 
@@ -73,10 +64,6 @@ switch ($method) {
         echo json_encode($quotes->create());
         break;
 
-
-    // -------------------------
-    // PUT REQUESTS
-    // -------------------------
     case 'PUT':
         $data = json_decode(file_get_contents("php://input"));
 
@@ -93,10 +80,6 @@ switch ($method) {
         echo json_encode($quotes->update());
         break;
 
-
-    // -------------------------
-    // DELETE REQUESTS
-    // -------------------------
     case 'DELETE':
         $data = json_decode(file_get_contents("php://input"));
 

@@ -1,56 +1,83 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
-header('Access-Control-Allow-Methods: GET, OPTIONS');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Origin, Accept, Content-Type, X-Requested-With');
 
-// Handle preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-include_once('../../config/Database.php');
-include_once('../../models/Categories.php');
+include_once '../../config/Database.php';
+include_once '../../models/Categories.php';
 
 $database = new Database();
 $db = $database->connect();
-
 $categories = new Categories($db);
 
-// If ID is provided, return a single category
-if (isset($_GET['id'])) {
-    $categories->id = $_GET['id'];
+$method = $_SERVER['REQUEST_METHOD'];
 
-    $result = $categories->read_single();
-    $row = $result->fetch(PDO::FETCH_ASSOC);
+switch ($method) {
 
-    if ($row) {
-        echo json_encode([
-            "id" => $row['id'],
-            "category" => $row['category']
-        ]);
-    } else {
-        echo json_encode(["message" => "category_id Not Found"]);
-    }
+    case 'GET':
+        if (isset($_GET['id'])) {
+            $categories->id = $_GET['id'];
+            $result = $categories->read_single();
 
-    exit();
-}
+            if (!$result) {
+                echo json_encode(["message" => "Category Not Found"]);
+            } else {
+                echo json_encode($result);
+            }
+            break;
+        }
 
-// Otherwise return all categories
-$result = $categories->read();
-$num = $result->rowCount();
+        $result = $categories->read();
 
-if ($num > 0) {
-    $categories_arr = [];
+        if (empty($result)) {
+            echo json_encode(["message" => "No Categories Found"]);
+        } else {
+            echo json_encode($result);
+        }
+        break;
 
-    while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-        $categories_arr[] = [
-            "id" => $row['id'],
-            "category" => $row['category']
-        ];
-    }
+    case 'POST':
+        $data = json_decode(file_get_contents("php://input"));
 
-    echo json_encode($categories_arr);
-} else {
-    echo json_encode(["message" => "No Categories Found"]);
+        if (!isset($data->category) || empty(trim($data->category))) {
+            echo json_encode(["message" => "Missing Required Parameters"]);
+            break;
+        }
+
+        $categories->category = $data->category;
+
+        echo json_encode($categories->create());
+        break;
+
+    case 'PUT':
+        $data = json_decode(file_get_contents("php://input"));
+
+        if (!isset($data->id) || !isset($data->category)) {
+            echo json_encode(["message" => "Missing Required Parameters"]);
+            break;
+        }
+
+        $categories->id = $data->id;
+        $categories->category = $data->category;
+
+        echo json_encode($categories->update());
+        break;
+
+    case 'DELETE':
+        $data = json_decode(file_get_contents("php://input"));
+
+        if (!isset($data->id)) {
+            echo json_encode(["message" => "Missing Required Parameters"]);
+            break;
+        }
+
+        $categories->id = $data->id;
+
+        echo json_encode($categories->delete());
+        break;
 }

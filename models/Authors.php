@@ -1,6 +1,7 @@
 <?php
 class Authors
 {
+
     private $conn;
     private $table = 'authors';
 
@@ -15,45 +16,52 @@ class Authors
     // READ ALL
     public function read()
     {
-        $query = "SELECT id, author FROM " . $this->table . " ORDER BY id ASC";
+        $query = "SELECT id, author FROM {$this->table} ORDER BY id ASC";
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
 
-        return $stmt;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // READ SINGLE
     public function read_single()
     {
         $query = "SELECT id, author 
-                  FROM " . $this->table . " 
-                  WHERE id = :id 
+                  FROM {$this->table}
+                  WHERE id = :id
                   LIMIT 1";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
         $stmt->execute();
 
-        return $stmt;
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
     // CREATE
     public function create()
     {
-        $query = "INSERT INTO " . $this->table . " (author)
+        $query = "INSERT INTO {$this->table} (author)
                   VALUES (:author)";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':author', $this->author);
 
-        return $stmt->execute();
+        if ($stmt->execute()) {
+            return [
+                "id" => $this->conn->lastInsertId(),
+                "author" => $this->author
+            ];
+        }
+
+        return ["message" => "Author Not Created"];
     }
 
     // UPDATE
     public function update()
     {
-        $query = "UPDATE " . $this->table . "
+        $query = "UPDATE {$this->table}
                   SET author = :author
                   WHERE id = :id";
 
@@ -62,21 +70,28 @@ class Authors
         $stmt->bindParam(':author', $this->author);
         $stmt->bindParam(':id', $this->id);
 
-        $stmt->execute();
+        if ($stmt->execute()) {
+            return [
+                "id" => $this->id,
+                "author" => $this->author
+            ];
+        }
 
-        return $stmt->rowCount() > 0;
+        return ["message" => "Author Not Updated"];
     }
 
     // DELETE
     public function delete()
     {
-        $query = "DELETE FROM " . $this->table . " WHERE id = :id";
+        $query = "DELETE FROM {$this->table} WHERE id = :id";
 
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $this->id);
 
-        $stmt->execute();
+        if ($stmt->execute()) {
+            return ["message" => "Author Deleted"];
+        }
 
-        return $stmt->rowCount() > 0;
+        return ["message" => "Author Not Deleted"];
     }
 }
