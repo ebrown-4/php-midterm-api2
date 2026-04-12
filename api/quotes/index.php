@@ -51,30 +51,27 @@ switch ($method) {
             exit();
         }
 
-        // GET by author_id
-        if (isset($_GET['author_id'])) {
+        // Combined filtering (author + category)
+        if (isset($_GET['author_id']) || isset($_GET['category_id'])) {
 
-            // Validate author first
-            if (!$quotes->author_exists($_GET['author_id'])) {
-                echo json_encode(["message" => "author_id Not Found"]);
-                exit();
+            // Validate author if provided
+            if (isset($_GET['author_id'])) {
+                if (!$quotes->author_exists($_GET['author_id'])) {
+                    echo json_encode(["message" => "author_id Not Found"]);
+                    exit();
+                }
+                $quotes->author_id = $_GET['author_id'];
             }
 
-            $quotes->author_id = $_GET['author_id'];
-            echo json_encode($quotes->read());
-            exit();
-        }
-
-        // GET by category_id
-        if (isset($_GET['category_id'])) {
-
-            // Validate category first
-            if (!$quotes->category_exists($_GET['category_id'])) {
-                echo json_encode(["message" => "category_id Not Found"]);
-                exit();
+            // Validate category if provided
+            if (isset($_GET['category_id'])) {
+                if (!$quotes->category_exists($_GET['category_id'])) {
+                    echo json_encode(["message" => "category_id Not Found"]);
+                    exit();
+                }
+                $quotes->category_id = $_GET['category_id'];
             }
 
-            $quotes->category_id = $_GET['category_id'];
             echo json_encode($quotes->read());
             exit();
         }
